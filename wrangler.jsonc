@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "url-shortener",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-01-01",
+
+  // KV for URL mappings (slug -> target URL)
+  "kv_namespaces": [
+    {
+      "binding": "URLS",
+      "id": "placeholder"
+    }
+  ],
+
+  // D1 for click analytics
+  "d1_databases": [
+    {
+      "binding": "ANALYTICS_DB",
+      "database_name": "url-shortener-analytics",
+      "database_id": "placeholder"
+    }
+  ],
+
+  // Durable Objects for real-time click counters
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CLICK_COUNTER",
+        "class_name": "ClickCounter"
+      }
+    ]
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["ClickCounter"]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute url-shortener-analytics --local --file=schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260227.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.67.0"
+  }
+}
