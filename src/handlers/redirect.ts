@@ -20,7 +20,9 @@ export async function handleRedirect(
   const doStub = env.CLICK_COUNTER.get(doId);
 
   // Increment counter (fire and forget for faster redirect)
-  const incrementPromise = doStub.fetch(new Request("https://do/increment", { method: "POST" }));
+  const incrementPromise = doStub.fetch(
+    new Request("https://do/increment", { method: "POST" })
+  );
 
   // Record analytics in D1 (also fire and forget)
   const cf = request.cf;

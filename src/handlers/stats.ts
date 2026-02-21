@@ -32,7 +32,9 @@ export async function handleStats(
   // Get total count from Durable Object
   const doId = env.CLICK_COUNTER.idFromName(code);
   const doStub = env.CLICK_COUNTER.get(doId);
-  const countResponse = await doStub.fetch(new Request("https://do/count", { method: "GET" }));
+  const countResponse = await doStub.fetch(
+    new Request("https://do/count", { method: "GET" })
+  );
   const { count: totalClicks } = await countResponse.json() as { count: number };
 
   // Get recent clicks from D1 (last 100)

@@ -1,15 +1,44 @@
 import { DurableObject } from "cloudflare:workers";
 
 export class ClickCounter extends DurableObject {
+  private ensureTable(): void {
+    this.ctx.storage.sql.exec(`
+      CREATE TABLE IF NOT EXISTS counter (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        count INTEGER NOT NULL DEFAULT 0,
+        first_click_at TEXT NOT NULL,
+        last_click_at TEXT NOT NULL
+      )
+    `);
+  }
+
   async increment(): Promise<number> {
-    const currentCount = (await this.ctx.storage.get<number>("count")) ?? 0;
-    const newCount = currentCount + 1;
-    await this.ctx.storage.put("count", newCount);
-    return newCount;
+    this.ensureTable();
+    const now = new Date().toISOString();
+
+    this.ctx.storage.sql.exec(
+      `INSERT INTO counter (id, count, first_click_at, last_click_at)
+       VALUES (1, 1, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         count = count + 1,
+         last_click_at = ?`,
+      now,
+      now,
+      now
+    );
+
+    const result = this.ctx.storage.sql
+      .exec(`SELECT count FROM counter WHERE id = 1`)
+      .one();
+    return (result?.count as number) ?? 0;
   }
 
   async getCount(): Promise<number> {
-    return (await this.ctx.storage.get<number>("count")) ?? 0;
+    this.ensureTable();
+    const result = this.ctx.storage.sql
+      .exec(`SELECT count FROM counter WHERE id = 1`)
+      .one();
+    return (result?.count as number) ?? 0;
   }
 
   async fetch(request: Request): Promise<Response> {
